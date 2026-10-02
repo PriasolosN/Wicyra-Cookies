@@ -12,6 +12,22 @@ const cartFooter = document.getElementById('cartFooter');
 const cartCount = document.getElementById('cartCount');
 const cartTotal = document.getElementById('cartTotal');
 const btnCheckout = document.getElementById('btnCheckout');
+const footerSection = document.querySelector('.footer-section');
+let liftTicking = false;
+
+function updateCartButtonLift() {
+    liftTicking = false;
+    if (!cartBtn || !footerSection) return;
+    const footerTop = footerSection.getBoundingClientRect().top;
+    const lift = Math.max(0, window.innerHeight - footerTop);
+    cartBtn.style.setProperty('--cart-lift', lift + 'px');
+}
+
+function requestCartButtonLift() {
+    if (liftTicking) return;
+    liftTicking = true;
+    window.requestAnimationFrame(updateCartButtonLift);
+}
 
 // Format currency
 function formatRupiah(amount) {
@@ -143,6 +159,11 @@ function generateWAMessage() {
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
     renderCart();
+    updateCartButtonLift();
+
+    window.addEventListener('scroll', requestCartButtonLift, { passive: true });
+    window.addEventListener('resize', requestCartButtonLift);
+    window.addEventListener('load', requestCartButtonLift);
 
     // Add to cart buttons
     document.querySelectorAll('.btn-add-cart').forEach(btn => {
